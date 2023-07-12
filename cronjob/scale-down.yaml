@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scale-down
+spec:
+  schedule: "0 19 * * 1-5"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: deployment-scaler-account
+          automountServiceAccountToken: true
+          containers:
+            - name: scale-down
+              image: bitnami/kubectl
+              args: ["scale", "deploy", "-l", "isScheduled=true", "--replicas=0"]
+          restartPolicy: Never

@@ -1,0 +1,28 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: deployment-scaler
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "deployments/scale"]
+    verbs: ["get", "update", "patch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ServiceAccount
+metadata:
+  name: deployment-scaler-account
+  namespace: deployment-scaler
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: deployment-scaler-binding
+subjects:
+  - kind: ServiceAccount
+    name: deployment-scaler-account
+    namespace: deployment-scaler
+roleRef:
+  kind: ClusterRole
+  name: deployment-scaler
+  apiGroup: rbac.authorization.k8s.io
